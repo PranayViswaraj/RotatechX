@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Health Data Stream</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 100px 20px 20px;
+      background-color: #0a0a12;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+    }
+
+    header {
+      background-color: #0f0f19;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 20px;
+      box-shadow: 0 2px 20px rgba(0, 191, 255, 0.2);
+      z-index: 100;
+      text-align: center;
+    }
+
+    header h1 {
+      color: #00bfff;
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .reading {
+      background-color: #1a1a2e;
+      border-left: 5px solid #00bfff;
+      margin: 20px auto;
+      max-width: 700px;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,191,255,0.2);
+    }
+
+    .reading.healthy { border-left-color: #00ff88; }
+    .reading.unhealthy { border-left-color: #ffaa00; }
+    .reading.emergency { border-left-color: #ff4444; }
+
+    pre {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .divider {
+      text-align: center;
+      color: #555;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Live Health Data Report</h1>
+</header>
+
+<div id="readings"></div>
+
+<script>
+  // Data from the uploaded CSV (preprocessed into JSON-style list)
+  const healthData = [
+    {"Heart Rate": 74.05748366, "SpO2": 98.25144931, "Steps": 9374.591003, "Sleep": 7.693121875, "Calories Burnt": 413.6332501, "Blood Pressure": "120/77", "Health Condition": "Healthy"},
+    {"Heart Rate": 103.6770107, "SpO2": 93.27832585, "Steps": 2982.590391, "Sleep": 4.978162049, "Calories Burnt": 181.150332, "Blood Pressure": "150/96", "Health Condition": "Unhealthy"},
+    {"Heart Rate": 113.3191764, "SpO2": 93.31318562, "Steps": 3566.650395, "Sleep": 5.753348379, "Calories Burnt": 102.1762602, "Blood Pressure": "149/94", "Health Condition": "Unhealthy"},
+    {"Heart Rate": 37.30596174, "SpO2": 86.50609111, "Steps": 309.639502, "Sleep": 1.847267262, "Calories Burnt": 41.06660526, "Blood Pressure": "165/106", "Health Condition": "Emergency"}
+    // Add the rest of the CSV data entries here as needed
+  ];
+
+  const readingsContainer = document.getElementById("readings");
+  let index = 0;
+
+  function addReading() {
+    if (index >= healthData.length) return;
+
+    const entry = healthData[index];
+    const condition = entry["Health Condition"];
+    let emoji = "", msg = "", className = "";
+
+    if (condition === "Healthy") {
+      emoji = "🩺 Condition Detected: Healthy";
+      msg = "✅ All vitals normal.";
+      className = "healthy";
+    } else if (condition === "Unhealthy") {
+      emoji = "🩺 Condition Detected: Unhealthy";
+      msg = "⚠️ Health check recommended.";
+      className = "unhealthy";
+    } else {
+      emoji = "🩺 Condition Detected: Emergency";
+      msg = "🚨 EMERGENCY ALERT! Immediate attention required!\n📩 Alert msg sent to +91 7358494750";
+      className = "emergency";
+    }
+
+    const block = document.createElement('div');
+    block.className = `reading ${className}`;
+    block.innerHTML = `
+      <pre>
+--- Reading ${index + 1} ---
+Heart Rate    : ${entry["Heart Rate"].toFixed(2)} bpm
+SpO2          : ${entry["SpO2"].toFixed(2)}%
+Steps         : ${entry["Steps"].toFixed(2)}
+Sleep         : ${entry["Sleep"].toFixed(2)} hrs
+Calories Burnt: ${entry["Calories Burnt"].toFixed(2)} kcal
+Blood Pressure: ${entry["Blood Pressure"]}
+
+${emoji}
+${msg}
+      </pre>
+      <div class="divider">----------------------------------------</div>
+    `;
+
+    readingsContainer.appendChild(block);
+    block.scrollIntoView({ behavior: 'smooth', block: 'end' });
+
+    index++;
+    setTimeout(addReading, 3000); // wait 3 seconds before next reading
+  }
+
+  // Start scrolling readings
+  addReading();
+</script>
+
+</body>
+</html>

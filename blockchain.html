@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blockchain Connect</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <style>
+    body {
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+    button {
+      background-color: #f6851b;
+      color: white;
+      font-size: 18px;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .info {
+      font-size: 18px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🔗 Blockchain Dashboard</h1>
+  <button id="connectBtn">Connect Wallet</button>
+
+  <div class="info" id="walletInfo">Wallet not connected</div>
+  <div class="info" id="balanceInfo"></div>
+  <div class="info" id="networkInfo"></div>
+
+  <script>
+    const connectBtn = document.getElementById('connectBtn');
+    const walletInfo = document.getElementById('walletInfo');
+    const balanceInfo = document.getElementById('balanceInfo');
+    const networkInfo = document.getElementById('networkInfo');
+
+    connectBtn.onclick = async () => {
+      if (!window.ethereum) {
+        walletInfo.textContent = '🦊 MetaMask is not installed.';
+        return;
+      }
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      try {
+        await provider.send("eth_requestAccounts", []);
+        const signer = provider.getSigner();
+        const address = await signer.getAddress();
+        const network = await provider.getNetwork();
+        const balanceWei = await provider.getBalance(address);
+        const balance = ethers.utils.formatEther(balanceWei);
+
+        walletInfo.textContent = `✅ Connected Wallet: ${address}`;
+        balanceInfo.textContent = `💰 Balance: ${balance} ETH`;
+        networkInfo.textContent = `🌐 Network: ${network.name} (chainId: ${network.chainId})`;
+
+        // Optional: listen to account/network change
+        ethereum.on('accountsChanged', () => window.location.reload());
+        ethereum.on('chainChanged', () => window.location.reload());
+
+      } catch (err) {
+        walletInfo.textContent = `❌ Error: ${err.message}`;
+      }
+    };
+  </script>
+
+</body>
+</html>

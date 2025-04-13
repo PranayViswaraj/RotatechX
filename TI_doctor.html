@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TI-BAND - Advanced Health Monitoring</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #0a0a12;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: rgba(15, 15, 25, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 191, 255, 0.2);
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            color: #00bfff;
+            font-size: 1.8rem;
+            margin-left: 10px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #00bfff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-icon span {
+            color: #000;
+            font-weight: bold;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 30px;
+        }
+        
+        nav ul li a {
+            color: #00bfff;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: color 0.3s, text-shadow 0.3s;
+            position: relative;
+        }
+        
+        nav ul li a:hover {
+            color: #7df9ff;
+            text-shadow: 0 0 8px rgba(0, 191, 255, 0.5);
+        }
+        
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #00bfff;
+            transition: width 0.3s ease;
+        }
+        
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+        
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://source.unsplash.com/1600x900/?health,fitness') no-repeat center center/cover;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, #0a0a12 90%);
+            z-index: 1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h2 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(0, 191, 255, 0.7);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #ccc;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #0088cc, #00bfff);
+            color: #fff;
+            padding: 15px 40px;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.4);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 25px rgba(0, 191, 255, 0.6);
+        }
+        
+        section {
+            padding: 80px 0;
+        }
+        
+        section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            color: #00bfff;
+            position: relative;
+        }
+        
+        section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #00bfff, transparent);
+        }
+        
+        .features {
+            background-color: #0f0f1a;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature {
+            background: linear-gradient(145deg, #151525, #0d0d1a);
+            border-radius: 15px;
+            padding: 30px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .feature:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 191, 255, 0.3);
+        }
+        
+        .feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 0;
+            background: linear-gradient(to bottom, #00bfff, transparent);
+            transition: height 0.5s ease;
+        }
+        
+        .feature:hover::before {
+            height: 100%;
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(0, 191, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .feature h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #7df9ff;
+        }
+        
+        .dashboard {
+            background-color: #0a0a14;
+        }
+        
+        .dashboard-preview {
+            background-color: #151525;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 50px;
+        }
+        
+        .dashboard-preview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(0, 191, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dashboard-title {
+            font-size: 1.5rem;
+            color: #fff;
+        }
+        
+        .dashboard-date {
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        
+        .metric {
+            background: linear-gradient(145deg, #1a1a2e, #161625);
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metric:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 0 15px rgba(0, 191, 255, 0.2);
+        }
+        
+        .metric-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .metric-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 191, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        
+        .metric h3 {
+            font-size: 1.1rem;
+            color: #ccc;
+            font-weight: 500;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+            margin: 10px 0;
+        }
+        
+        .metric-status {
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .status-normal {
+            background-color: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+        }
+        
+        .status-warning {
+            background-color: rgba(241, 196, 15, 0.2);
+            color: #f1c40f;
+        }
+        
+        .status-alert {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+        
+        .metric-trend {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #777;
+            margin-top: 10px;
+        }
+        
+        .task {
+            background-color: #0f0f1a;
+        }
+        
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .task-item {
+            background: linear-gradient(145deg, #151525, #0d0d1a);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .task-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 191, 255, 0.3);
+        }
+        
+        .task-icon {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(0, 191, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .task-item h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #7df9ff;
+        }
+        
+        .progress-container {
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00bfff, #7df9ff);
+            border-radius: 4px;
+            width: 65%;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        /* About Section */
+        .about {
+            background-color: #0a0a14;
+        }
+        
+        .about-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .about-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #7df9ff;
+        }
+        
+        .about-image {
+            flex: 1;
+            min-width: 300px;
+            background-color: #151525;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 191, 255, 0.3);
+        }
+        
+        .about-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Contact Section */
+        .contact {
+            background-color: #0f0f1a;
+        }
+        
+        .contact-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: center;
+        }
+        
+        .contact-info {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .contact-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #7df9ff;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(0, 191, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .contact-details h4 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: #e0e0e0;
+        }
+        
+        .contact-details p {
+            color: #999;
+        }
+        
+        .contact-form {
+            flex: 1;
+            min-width: 300px;
+            background: linear-gradient(145deg, #151525, #0d0d1a);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: rgba(0, 191, 255, 0.5);
+            box-shadow: 0 0 8px rgba(0, 191, 255, 0.2);
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        .submit-button {
+            background: linear-gradient(45deg, #0088cc, #00bfff);
+            color: #fff;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .submit-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.4);
+        }
+        
+        footer {
+            background-color: #0a0a12;
+            padding: 50px 0 20px;
+            text-align: center;
+        }
+        
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        
+        .social-icon:hover {
+            background-color: rgba(0, 191, 255, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            margin-top: 30px;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        
+        .mobile-toggle {
+            display: none;
+            font-size: 1.5rem;
+            color: #00bfff;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 200px;
+            margin-top: 30px;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            section {
+                padding: 60px 0;
+            }
+            
+            .hero h2 {
+                font-size: 2.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            nav {
+                margin-top: 20px;
+            }
+            
+            nav ul {
+                flex-direction: column;
+            }
+            
+            nav ul li {
+                margin: 10px 0;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .feature, .metric, .task-item {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .features-grid, .metrics-grid, .task-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero h2 {
+                font-size: 1.8rem;
+            }
+            
+            .cta-button {
+                padding: 12px 30px;
+            }
+        }
+        .recommendation {
+            background-color: #0a0a14;
+            padding: 80px 0;
+        }
+        .recommendation-card {
+            background: linear-gradient(145deg, #151525, #0d0d1a);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(0, 191, 255, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .recommendation-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .recommendation-icon {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(0, 191, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            font-size: 1.8rem;
+        }
+
+        .recommendation-card h3 {
+            font-size: 1.6rem;
+            color: #7df9ff;
+            margin: 0;
+        }
+
+        .recommendation-content {
+            margin-top: 30px;
+        }
+
+        .recommendation-content h4 {
+            font-size: 1.4rem;
+            color: #00bfff;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .recommendation-content h5 {
+            font-size: 1.2rem;
+            color: #7df9ff;
+            margin: 20px 0 10px;
+        }
+
+        .recommendation-content p {
+            margin-bottom: 20px;
+            color: #ccc;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .recommendation-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: linear-gradient(145deg, #131323, #0b0b18);
+        }
+
+        .recommendation-table th,
+        .recommendation-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .recommendation-table th {
+            background-color: rgba(0, 191, 255, 0.1);
+            color: #00bfff;
+            font-weight: 600;
+        }
+
+        .recommendation-table tr:hover {
+            background-color: rgba(0, 191, 255, 0.05);
+        }
+
+        .meal-plan {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .meal-category {
+            background-color: rgba(0, 191, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .meal-category ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .meal-category li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .meal-category li:last-child {
+            border-bottom: none;
+        }
+
+        .meal-category li strong {
+            color: #00bfff;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .meal-plan {
+                grid-template-columns: 1fr;
+            }
+            
+            .recommendation-card {
+                padding: 20px;
+            }
+            
+            .recommendation-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon"><span>T</span></div>
+                    <h1>TI-BAND</h1>
+                </div>
+                <button class="mobile-toggle">☰</button>
+                <nav>
+                    <ul>
+			<li><a href="fetal_monitoring.html" target="_blank">Fetal Monitoring</a></li>
+
+			<li><a href="app.html" target="_blank">Health Status</a></li>
+			<li><a href="health_status.html" target="_blank">Live vitals</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#dashboard">Dashboard</a></li>
+			<li><a href="leaderboard.html" target="_blank">Leaderboard</a></li>
+                        <li><a href="#recomendation">Recomendation</a></li>
+                        <li><a href="#task">Task</a></li>
+                        <li><a href="#about">About</a></li>
+                                          
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2>Health Monitoring Reimagined</h2>
+                <p>Track your vital signs in real-time, set health goals, and receive personalized insights with our AI-powered health monitoring platform.</p>
+                <a href="#features" class="cta-button">Explore Features</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <h2>Advanced Features</h2>
+            <div class="features-grid">
+                <div class="feature">
+                    <div class="feature-icon">🌡</div>
+                    <h3>Comprehensive Vital Monitoring</h3>
+                    <p>Track temperature, heart rate, blood pressure, SpO₂, and more with medical-grade accuracy.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔔</div>
+                    <h3>Smart Alerts & Notifications</h3>
+                    <p>Receive instant alerts when your vitals fall outside your personalized normal range.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🚨</div>
+                    <h3>Emergency Response System</h3>
+                    <p>One-touch emergency calling with automatic location sharing and vital sign reporting.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Health Analysis</h3>
+                    <p>Our AI engine detects patterns and provides personalized recommendations to improve your health.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📱</div>
+                    <h3>Multi-device Sync</h3>
+                    <p>Seamlessly sync your health data across all your devices and share with trusted healthcare providers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="dashboard" class="dashboard">
+        <div class="container">
+            <h2>Interactive Health Dashboard</h2>
+            <div class="dashboard-preview">
+                <div class="dashboard-header">
+                    <div class="dashboard-title">Your Health Overview</div>
+                    <div class="dashboard-date">Sunday, April 13, 2025</div>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric">
+                        <div class="metric-header">
+                            <div class="metric-icon">🌡</div>
+                            <h3>Body Temperature</h3>
+                        </div>
+                        <div class="metric-value">0°C</div>
+                        <div class="metric-status status-normal">Normal</div>
+                        <div class="metric-trend">
+                            <span>Past 24h: Stable</span>
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-header">
+                            <div class="metric-icon">❤</div>
+                            <h3>Heart Rate</h3>
+                        </div>
+                        <div class="metric-value">0 bpm</div>
+                        <div class="metric-status status-normal">Normal</div>
+                        <div class="metric-trend">
+                            <span>Past 24h: -3 bpm</span>
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-header">
+                            <div class="metric-icon">🩸</div>
+                            <h3>Blood Pressure</h3>
+                        </div>
+                        <div class="metric-value">0</div>
+                        <div class="metric-status status-normal">Normal</div>
+                        <div class="metric-trend">
+                            <span>Past 24h: Stable</span>
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-header">
+
+                            <div class="metric-icon">🫁</div>
+                            <h3>Oxygen Saturation</h3>
+                        </div>
+                        <div class="metric-value">0%</div>
+                        <div class="metric-status status-normal">Normal</div>
+                        <div class="metric-trend">
+                            <span>Past 24h: +1%</span>
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-header">
+                            <div class="metric-icon">👟</div>
+                            <h3>Steps</h3>
+                        </div>
+                        <div class="metric-value">0</div>
+                        <div class="metric-status status-normal">keep walking</div>
+                        <div class="metric-trend">
+                            <span>Past 24h: Avg-30</span>
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-header">
+                            <div class="metric-icon">🧪</div>
+                            <h3>Blood Glucose</h3>
+                        </div>
+                        <div class="metric-value">0</div>
+                        <div class="metric-status status-normal">Normal</div>
+                        <div class="metric-trend">
+                            <span>Past 24h: -5 mg/dL</span>
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-header">
+                            <div class="metric-icon">⚖</div>
+                            <h3>CALORIES</h3>
+                        </div>
+                        <div class="metric-value">0</div>
+                        <div class="metric-status status-normal">Normal</div>
+                        <div class="metric-trend">
+                            <span>Past 30d: 0</span>
+                        </div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-header">
+                            <div class="metric-icon">📊</div>
+                            <h3>ECG</h3>
+                        </div>
+                        <div class="metric-value">-----</div>
+                        <div class="metric-status status-normal">Sinus Rhythm</div>
+                        <div class="metric-trend">
+                            <span>Last check: 2h ago</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="healthChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="task" class="task">
+        <div class="container">
+            <h2> Health Achievements & Goals</h2>
+            <div class="task-grid">
+                <div class="task-item">
+                    <div class="task-icon">🏅</div>
+                    <h3>Health Score</h3>
+                    <p>Your overall health score based on all monitored metrics</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 85%"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span>Score: 85/100</span>
+                        <span>Excellent</span>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <div class="task-icon">🎯</div>
+                    <h3>Weekly Goals</h3>
+                    <p>Complete health challenges to earn rewards</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 60%"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span>Progress: 3/5</span>
+                        <span>2 days left</span>
+                    </div>
+                </div>
+                <div class="task-item">
+                    <div class="task-icon">🏆</div>
+                    <h3>Achievements</h3>
+                    <p>Unlock badges by maintaining healthy metrics</p>
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 40%"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span>Unlocked: 8/20</span>
+                        <span>Silver tier</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="recomendation" class="recommendation">
+        <div class="container">
+            <h2>Personalized Recommendations</h2>
+            
+            <div class="recommendation-card">
+                <div class="recommendation-header">
+                    <div class="recommendation-icon">🌙</div>
+                    <h3>Optimized Sleep & Daily Schedule</h3>
+                </div>
+                <p>Since you're getting 5 hours of sleep (10 PM - 3 AM), you should focus on power naps and a structured routine to stay healthy.</p>
+                
+                <div class="recommendation-content">
+                    <h4>📅 Daily Schedule</h4>
+                    <div class="table-container">
+                        <table class="recommendation-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Activity</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>3:00 AM</td>
+                                    <td>Wake up & Hydrate</td>
+                                    <td>Drink 500 ml of warm water to activate digestion.</td>
+                                </tr>
+                                <tr>
+                                    <td>3:30 AM - 4:00 AM</td>
+                                    <td>Meditation & Deep Breathing</td>
+                                    <td>Helps wake up your brain & improve focus.</td>
+                                </tr>
+                                <tr>
+                                    <td>4:00 AM - 4:30 AM</td>
+                                    <td>Light Workout (Stretching/Yoga)</td>
+                                    <td>Keep the body active without over-exertion.</td>
+                                </tr>
+                                <tr>
+                                    <td>4:30 AM - 5:00 AM</td>
+                                    <td>Morning Tea / Herbal Drink</td>
+                                    <td>Green Tea / Lemon Honey Water / Turmeric Tea</td>
+                                </tr>
+                                <tr>
+                                    <td>5:00 AM - 6:00 AM</td>
+                                    <td>Work / Study / Productivity</td>
+                                    <td>Best time for deep focus.</td>
+                                </tr>
+                                <tr>
+                                    <td>6:00 AM - 7:00 AM</td>
+                                    <td>Healthy Breakfast</td>
+                                    <td>Protein + Good Fats + Fiber (See meal plan below)</td>
+                                </tr>
+                                <tr>
+                                    <td>7:30 AM - 12:00 PM</td>
+                                    <td>Work / Meetings / Classes</td>
+                                    <td>Take small breaks every 2 hours.</td>
+                                </tr>
+                                <tr>
+                                    <td>12:00 PM - 12:30 PM</td>
+                                    <td>Lunch</td>
+                                    <td>Balanced meal with carbs, proteins, veggies.</td>
+                                </tr>
+                                <tr>
+                                    <td>12:30 PM - 1:00 PM</td>
+                                    <td>Power Nap (30 mins)</td>
+                                    <td>Essential to restore energy.</td>
+                                </tr>
+                                <tr>
+                                    <td>1:00 PM - 6:00 PM</td>
+                                    <td>Work / Physical Activity</td>
+                                    <td>Walk for 5-10 mins every 1-2 hours.</td>
+                                </tr>
+                                <tr>
+                                    <td>6:00 PM - 7:00 PM</td>
+                                    <td>Evening Snack & Relaxation</td>
+                                    <td>Light meal + Herbal Tea. Avoid caffeine.</td>
+                                </tr>
+                                <tr>
+                                    <td>7:00 PM - 8:00 PM</td>
+                                    <td>Leisure / Family Time</td>
+                                    <td>Unwind, read, light walk.</td>
+                                </tr>
+                                <tr>
+                                    <td>8:00 PM - 8:30 PM</td>
+                                    <td>Dinner (Light & Early)</td>
+                                    <td>Focus on soups, salads, proteins.</td>
+                                </tr>
+                                <tr>
+                                    <td>9:00 PM - 9:30 PM</td>
+                                    <td>Self-Reflection & Relaxation</td>
+                                    <td>Avoid screen time, do gratitude journaling.</td>
+                                </tr>
+                                <tr>
+                                    <td>10:00 PM</td>
+                                    <td>Sleep</td>
+                                    <td>Maintain sleep hygiene (no blue light, dim room)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h4>🥗 Weekly Food Plan (Healthy Eating)</h4>
+                    <p>This meal plan supports energy levels, gut health, and better sleep.</p>
+                    
+                    <div class="meal-plan">
+                        <div class="meal-category">
+                            <h5>🌅 Breakfast (6:30 AM)</h5>
+                            <ul>
+                                <li><strong>Monday:</strong> Oats + Almonds + Greek Yogurt</li>
+                                <li><strong>Tuesday:</strong> Scrambled Eggs + Avocado Toast</li>
+                                <li><strong>Wednesday:</strong> Smoothie (Banana + Berries + Protein)</li>
+                                <li><strong>Thursday:</strong> Poha / Idli with Coconut Chutney</li>
+                                <li><strong>Friday:</strong> Whole Wheat Pancakes + Peanut Butter</li>
+                                <li><strong>Saturday:</strong> Sprouts & Chia Pudding</li>
+                                <li><strong>Sunday:</strong> Upma + Herbal Tea</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="meal-category">
+                            <h5>🍱 Lunch (12:00 PM)</h5>
+                            <ul>
+                                <li><strong>Monday:</strong> Brown Rice + Grilled Chicken + Salad</li>
+                                <li><strong>Tuesday:</strong> Quinoa + Paneer Curry + Raita</li>
+                                <li><strong>Wednesday:</strong> Chapati + Dal + Vegetables</li>
+                                <li><strong>Thursday:</strong> Millet Bowl + Boiled Eggs + Greens</li>
+                                <li><strong>Friday:</strong> Whole Wheat Pasta + Veggies</li>
+                                <li><strong>Saturday:</strong> Dal Khichdi + Curd</li>
+                                <li><strong>Sunday:</strong> Fish Curry + Brown Rice</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="meal-category">
+                            <h5>🌆 Evening Snack (6:00 PM)</h5>
+                            <ul>
+                                <li><strong>Monday:</strong> Nuts & Green Tea</li>
+                                <li><strong>Tuesday:</strong> Fruit + Yogurt</li>
+                                <li><strong>Wednesday:</strong> Roasted Chickpeas</li>
+                                <li><strong>Thursday:</strong> Dark Chocolate + Herbal Tea</li>
+                                <li><strong>Friday:</strong> Sweet Potato Chaat</li>
+                                <li><strong>Saturday:</strong> Mixed Seeds & Dry Fruits</li>
+                                <li><strong>Sunday:</strong> Soup + Whole Wheat Crackers</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="meal-category">
+                            <h5>🌙 Dinner (8:00 PM)</h5>
+                            <ul>
+                                <li><strong>Monday:</strong> Lentil Soup + Grilled Vegetables</li>
+                                <li><strong>Tuesday:</strong> Paneer Bhurji + Roti</li>
+                                <li><strong>Wednesday:</strong> Grilled Fish + Steamed Veggies</li>
+                                <li><strong>Thursday:</strong> Chickpea Salad + Yogurt</li>
+                                <li><strong>Friday:</strong> Moong Dal Khichdi + Buttermilk</li>
+                                <li><strong>Saturday:</strong> Light Dosa + Sambar</li>
+                                <li><strong>Sunday:</strong> Vegetable Stir-Fry + Tofu</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <h4>🧘 Meditation Schedule</h4>
+                    <p>Since you wake up early, morning meditation is crucial to reduce stress & improve focus.</p>
+                    <div class="table-container">
+                        <table class="recommendation-table">
+                            <thead>
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Meditation Type</th>
+                                    <th>Duration</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Monday</td>
+                                    <td>Breathing Exercises (Pranayama)</td>
+                                    <td>20 min</td>
+                                    <td>3:30 AM</td>
+                                </tr>
+                                <tr>
+                                    <td>Tuesday</td>
+                                    <td>Guided Mindfulness</td>
+                                    <td>20 min</td>
+                                    <td>3:30 AM</td>
+                                </tr>
+                                <tr>
+                                    <td>Wednesday</td>
+                                    <td>Chakra Healing Meditation</td>
+                                    <td>20 min</td>
+                                    <td>3:30 AM</td>
+                                </tr>
+                                <tr>
+                                    <td>Thursday</td>
+                                    <td>Gratitude Meditation</td>
+                                    <td>20 min</td>
+                                    <td>3:30 AM</td>
+                                </tr>
+                                <tr>
+                                    <td>Friday</td>
+                                    <td>Deep Focus Meditation</td>
+                                    <td>20 min</td>
+                                    <td>3:30 AM</td>
+                                </tr>
+                                <tr>
+                                    <td>Saturday</td>
+                                    <td>Sleep Relaxation Meditation</td>
+                                    <td>20 min</td>
+                                    <td>9:30 PM</td>
+                                </tr>
+                                <tr>
+                                    <td>Sunday</td>
+                                    <td>Walking Meditation</td>
+                                    <td>20 min</td>
+                                    <td>6:00 AM</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2> contact details </h2>
+            <l1>Dial: 12345 12345</l1>
+        </div>
+    </section> 
+
+<!-- ... Your existing head and body content ... -->
+
+<!-- Add this script right before the closing body tag -->
+<script>
+    // Define arrays of values for each vital sign
+    const heartRateValues = [0];
+    const spo2Values = [0];
+    const bpValues = [0];
+    const temperatureValues = [0];
+
+    // Function to update vital signs
+    function updateVitalSigns() {
+        // Current index in the arrays
+        let currentIndex = 0;
+        
+        // Update function that will be called every 2 seconds
+        function update() {
+            // Get DOM elements for each vital sign
+            const heartRateElement = document.querySelector('.metric:nth-child(2) .metric-value');
+            const bpElement = document.querySelector('.metric:nth-child(3) .metric-value');
+            const spo2Element = document.querySelector('.metric:nth-child(4) .metric-value');
+            const temperatureElement = document.querySelector('.metric:nth-child(1) .metric-value');
+            
+            // Update values if elements exist
+            if (heartRateElement) {
+                heartRateElement.textContent = `${heartRateValues[currentIndex]} bpm`;
+            }
+            
+            if (bpElement) {
+                // For BP, we'll keep the diastolic as 76 and only vary the systolic value
+                bpElement.textContent = `${bpValues[currentIndex]}/0`;
+            }
+            
+            if (spo2Element) {
+                spo2Element.textContent = `${spo2Values[currentIndex]}%`;
+            }
+            
+            if (temperatureElement) {
+                temperatureElement.textContent = `${temperatureValues[currentIndex]}°C`;
+            }
+            
+            // Move to the next index, cycling back to 0 when reaching the end
+            currentIndex = (currentIndex + 1) % heartRateValues.length;
+        }
+        
+        // Start the interval to update values every 2 seconds
+        setInterval(update, 4000);
+        
+        // Run once immediately to update values without waiting for first interval
+        update();
+    }
+
+    // Add event listener for when the DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize the vital signs updater
+        updateVitalSigns();
+    });
+
+    
+</script>
+</body>
+</html>

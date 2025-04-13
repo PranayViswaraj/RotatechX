@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Health Monitor Dashboard</title>
+  <style>
+    body {
+      background-color: #0a0a12;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #e0e0e0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #7df9ff;
+    }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .card {
+      background-color: #12121a;
+      border-radius: 16px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      padding: 20px;
+      width: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    .metric-title {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .status {
+      background-color: #1e2f26;
+      color: #59fba6;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+
+    .footer {
+      font-size: 0.75rem;
+      color: #999;
+    }
+
+    .checklist {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 1px solid #333;
+    }
+
+    .checklist h2 {
+      color: #7df9ff;
+      margin-bottom: 10px;
+    }
+
+    .checklist label {
+      margin: 0 15px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .checklist input[type="checkbox"] {
+      transform: scale(1.3);
+      margin-right: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Live Health Condition Dashboard</h1>
+
+  <div class="grid">
+    <div class="card">
+      <div class="metric-title">💓 Heart Rate</div>
+      <div id="heartRate" class="metric-value">-- bpm</div>
+      <div class="status">Normal</div>
+      <div class="footer">Past 24h: Stable</div>
+    </div>
+
+    <div class="card">
+      <div class="metric-title">🩸 Blood Pressure</div>
+      <div id="bp" class="metric-value">--/--</div>
+      <div class="status">Normal</div>
+      <div class="footer">Past 24h: Stable</div>
+    </div>
+
+    <div class="card">
+      <div class="metric-title">🫁 Oxygen Saturation</div>
+      <div id="spo2" class="metric-value">--%</div>
+      <div class="status">Normal</div>
+      <div class="footer">Past 24h: +1%</div>
+    </div>
+
+    <div class="card">
+      <div class="metric-title">👟 Steps</div>
+      <div id="steps" class="metric-value">--</div>
+      <div class="status">Keep walking</div>
+      <div class="footer">Today</div>
+    </div>
+
+    <div class="card">
+      <div class="metric-title">🔥 Calories Burnt</div>
+      <div id="calories" class="metric-value">--</div>
+      <div class="status">Normal</div>
+      <div class="footer">Past 30d: avg</div>
+    </div>
+
+    <div class="card">
+      <div class="metric-title">💤 Sleep</div>
+      <div id="sleep" class="metric-value">-- hrs</div>
+      <div class="status">Normal</div>
+      <div class="footer">Last night</div>
+    </div>
+
+    <div class="card">
+      <div class="metric-title">💬 Health Condition</div>
+      <div id="condition" class="metric-value">--</div>
+      <div class="status">Updated</div>
+      <div class="footer">Every 2 sec</div>
+    </div>
+  </div>
+
+  <div class="checklist">
+    <h2>📝 Daily Checklist</h2>
+    <p>Do you feel regular baby kicks?</p>
+    <label><input type="checkbox" name="kick" id="kickYes"> Yes</label>
+    <label><input type="checkbox" name="kick" id="kickNo"> No</label>
+  </div>
+
+  <script>
+    async function fetchAndUpdate() {
+      try {
+        const liveRes = await fetch("http://localhost:5000/live-data");
+        const vitals = await liveRes.json();
+
+        document.getElementById("heartRate").innerText = vitals["Heart Rate"] + " bpm";
+        document.getElementById("spo2").innerText = vitals["SpO2"] + "%";
+        document.getElementById("steps").innerText = vitals["Steps"];
+        document.getElementById("sleep").innerText = vitals["Sleep"] + " hrs";
+        document.getElementById("calories").innerText = vitals["Calories Burnt"];
+        document.getElementById("bp").innerText = vitals["Systolic_BP"] + "/" + vitals["Diastolic_BP"];
+
+        const analyzeRes = await fetch("http://localhost:5000/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(vitals)
+        });
+
+        const analyzeData = await analyzeRes.json();
+        document.getElementById("condition").innerText = analyzeData.condition;
+
+      } catch (err) {
+        document.getElementById("condition").innerText = "⚠️ Error";
+        console.error("Error fetching data:", err);
+      }
+    }
+
+    setInterval(fetchAndUpdate, 2000);
+    fetchAndUpdate(); // Initial call
+  </script>
+</body>
+</html>

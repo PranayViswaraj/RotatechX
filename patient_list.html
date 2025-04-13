@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Patient List</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 100px 20px 40px;
+      background-color: #0a0a12;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    header {
+      background-color: #0f0f19;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 20px;
+      box-shadow: 0 2px 20px rgba(0, 191, 255, 0.2);
+      z-index: 100;
+      text-align: center;
+    }
+
+    header h1 {
+      color: #00bfff;
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .patient-card {
+      background-color: #1a1a2e;
+      border-left: 5px solid #00bfff;
+      margin: 20px auto;
+      max-width: 700px;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,191,255,0.2);
+      transition: transform 0.3s;
+    }
+
+    .patient-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 20px rgba(0,191,255,0.4);
+    }
+
+    .patient-card h2 {
+      color: #7df9ff;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .patient-card p {
+      margin: 5px 0;
+      font-size: 0.95rem;
+    }
+
+    .patient-card a {
+      text-decoration: none;
+      color: #7df9ff;
+    }
+
+    .patient-card a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Patient Records</h1>
+</header>
+
+<div class="patient-card">
+  <h2><a href="TI_doctor.html" target="_blank">Patient 1: Arjun R</a></h2>
+  <p>🆔 ID: PT001</p>
+  <p>📅 Last Checkup: 2025-03-21</p>
+</div>
+
+<div class="patient-card">
+  <h2><a href="TI_doctor.html" target="_blank">Patient 2: Deepika S</a></h2>
+  <p>🆔 ID: PT002</p>
+  <p>📅 Last Checkup: 2025-03-27</p>
+</div>
+
+<div class="patient-card">
+  <h2><a href="TI_doctor.html" target="_blank">Patient 3: Ravi Kumar</a></h2>
+  <p>🆔 ID: PT003</p>
+  <p>📅 Last Checkup: 2025-03-31</p>
+</div>
+
+<div class="patient-card">
+  <h2><a href="TI_doctor.html" target="_blank">Patient 4: Nisha P</a></h2>
+  <p>🆔 ID: PT004</p>
+  <p>📅 Last Checkup: 2025-04-02</p>
+</div>
+
+<div class="patient-card">
+  <h2><a href="TI_doctor.html" target="_blank">Patient 5: Suresh K</a></h2>
+  <p>🆔 ID: PT005</p>
+  <p>📅 Last Checkup: 2025-04-07</p>
+</div>
+
+<div class="patient-card">
+  <h2><a href="TI_doctor.html" target="_blank">Patient 6: Ananya M</a></h2>
+  <p>🆔 ID: PT006</p>
+  <p>📅 Last Checkup: 2025-04-10</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upcoming Doctor Appointments</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 100px 20px 20px;
+      background-color: #0a0a12;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    header {
+      background-color: #0f0f19;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 20px;
+      box-shadow: 0 2px 20px rgba(0, 191, 255, 0.2);
+      z-index: 100;
+      text-align: center;
+    }
+
+    header h1 {
+      color: #00bfff;
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .appointments {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: #141422;
+      box-shadow: 0 0 15px rgba(0, 191, 255, 0.2);
+    }
+
+    .appointments h2 {
+      color: #00bfff;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .appointment {
+      background-color: #1e1e30;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-left: 4px solid #00bfff;
+      border-radius: 5px;
+      line-height: 1.6;
+    }
+
+    form {
+      background-color: #1e1e30;
+      padding: 15px;
+      border-radius: 5px;
+      margin-top: 30px;
+    }
+
+    form input, form button {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      width: 100%;
+      font-size: 1rem;
+    }
+
+    form input {
+      background-color: #2e2e40;
+      color: white;
+    }
+
+    form button {
+      background-color: #00bfff;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    form button:hover {
+      background-color: #0099cc;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Doctor Appointments</h1>
+</header>
+
+<div class="appointments">
+  <h2>📅 Upcoming Appointments</h2>
+
+  <div id="appointment-list">
+    <div class="appointment">
+      <strong>Doctor ID:</strong> D202301<br>
+      <strong>Doctor Name:</strong> Dr. Kavitha R<br>
+      <strong>Date & Time:</strong> April 14, 2025 at 11:00 AM
+    </div>
+
+    <div class="appointment">
+      <strong>Doctor ID:</strong> D202311<br>
+      <strong>Doctor Name:</strong> Dr. Manoj Kiran<br>
+      <strong>Date & Time:</strong> April 17, 2025 at 3:30 PM
+    </div>
+
+    <div class="appointment">
+      <strong>Doctor ID:</strong> D202319<br>
+      <strong>Doctor Name:</strong> Dr. Ayesha Ahmed<br>
+      <strong>Date & Time:</strong> April 20, 2025 at 9:15 AM
+    </div>
+  </div>
+
+  <form id="add-appointment-form">
+    <h3 style="text-align:center;color:#00bfff;">➕ Add New Appointment</h3>
+    <input type="text" id="doctorName" placeholder="Enter Doctor Name" required />
+    <input type="date" id="apptDate" required />
+    <input type="time" id="apptTime" required />
+    <button type="submit">Add Appointment</button>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById('add-appointment-form');
+  const appointmentList = document.getElementById('appointment-list');
+  let doctorCount = 4; // starting from 4 since 3 pre-filled
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('doctorName').value.trim();
+    const date = document.getElementById('apptDate').value;
+    const time = document.getElementById('apptTime').value;
+
+    if (!name || !date || !time) return;
+
+    const doctorId = `D2023${100 + doctorCount++}`;
+    const formattedDate = new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    const appointment = document.createElement('div');
+    appointment.classList.add('appointment');
+    appointment.innerHTML = `
+      <strong>Doctor ID:</strong> ${doctorId}<br>
+      <strong>Doctor Name:</strong> Dr. ${name}<br>
+      <strong>Date & Time:</strong> ${formattedDate} at ${time}
+    `;
+
+    appointmentList.appendChild(appointment);
+    form.reset();
+  });
+</script>
+
+</body>
+</html>

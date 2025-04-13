@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fetal Monitoring Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { background: #111; color: white; font-family: sans-serif; text-align: center; }
+    .chart-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
+    canvas { background: #222; border: 2px solid white; margin: 10px 0; }
+    .info { font-size: 18px; font-weight: bold; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Real-Time Fetal Monitoring Dashboard</h1>
+
+  <div class="chart-container">
+    <canvas id="fetalHRChart" width="600" height="200"></canvas>
+    <div class="info" id="fhr-info"></div>
+  </div>
+  <div class="chart-container">
+    <canvas id="fetalSpo2Chart" width="600" height="200"></canvas>
+    <div class="info" id="spo2-info"></div>
+  </div>
+  <div class="chart-container">
+    <canvas id="fetalMotionChart" width="600" height="200"></canvas>
+    <div class="info" id="motion-info"></div>
+  </div>
+  <div class="chart-container">
+    <canvas id="maternalVitalsChart" width="600" height="200"></canvas>
+    <div class="info" id="maternal-info"></div>
+  </div>
+
+  <script>
+    const timeLabels = [];
+    const hrData = [];
+    const spo2Data = [];
+    const motionData = [];
+    const maternalHRData = [];
+    const maternalSpo2Data = [];
+    let t = 0;
+
+    const configChart = (ctx, label, color, yMin, yMax) => new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: timeLabels,
+        datasets: [{ label, data: [], borderColor: color, tension: 0.3, fill: false }]
+      },
+      options: {
+        scales: {
+          x: { display: false },
+          y: { min: yMin, max: yMax, ticks: { color: 'white' } }
+        },
+        plugins: { legend: { labels: { color: 'white' } } },
+      }
+    });
+
+    const hrChart = configChart(document.getElementById('fetalHRChart'), 'Fetal HR (BPM)', 'red', 120, 160);
+    const spo2Chart = configChart(document.getElementById('fetalSpo2Chart'), 'Fetal SpO₂ (%)', 'blue', 65, 85);
+    const motionChart = configChart(document.getElementById('fetalMotionChart'), 'Fetal Movement Intensity', 'lime', 0, 1);
+    const maternalChart = new Chart(document.getElementById('maternalVitalsChart'), {
+      type: 'line',
+      data: {
+        labels: timeLabels,
+        datasets: [
+          { label: 'Maternal HR', data: [], borderColor: 'green', tension: 0.3, fill: false },
+          { label: 'Maternal SpO₂', data: [], borderColor: 'cyan', tension: 0.3, fill: false }
+        ]
+      },
+      options: {
+        scales: {
+          x: { display: false },
+          y: { min: 60, max: 100, ticks: { color: 'white' } }
+        },
+        plugins: { legend: { labels: { color: 'white' } } },
+      }
+    });
+
+    setInterval(() => {
+      const fhr = 135 + Math.random() * 10;
+      const spo2 = 75 + Math.random() * 5;
+      const motion = Math.random();
+      const mHR = 75 + Math.random() * 6;
+      const mSpO2 = 97 + (Math.random() - 0.5) * 3;
+      const state = motion > 0.7 ? "Kicking" : motion > 0.4 ? "Moving" : "Normal";
+      const headPos = Math.random() < 0.5 ? "Downward" : "Upward";
+
+      timeLabels.push(t);
+      hrChart.data.datasets[0].data.push(fhr);
+      spo2Chart.data.datasets[0].data.push(spo2);
+      motionChart.data.datasets[0].data.push(motion);
+      maternalChart.data.datasets[0].data.push(mHR);
+      maternalChart.data.datasets[1].data.push(mSpO2);
+
+      if (timeLabels.length > 60) {
+        timeLabels.shift();
+        hrChart.data.datasets[0].data.shift();
+        spo2Chart.data.datasets[0].data.shift();
+        motionChart.data.datasets[0].data.shift();
+        maternalChart.data.datasets[0].data.shift();
+        maternalChart.data.datasets[1].data.shift();
+      }
+
+      hrChart.update();
+      spo2Chart.update();
+      motionChart.update();
+      maternalChart.update();
+
+      document.getElementById('fhr-info').innerText = `Fetal HR: ${fhr.toFixed(1)} BPM`;
+      document.getElementById('spo2-info').innerText = `Fetal SpO₂: ${spo2.toFixed(1)} %`;
+      document.getElementById('motion-info').innerText = `Motion Intensity: ${motion.toFixed(2)} | State: ${state} | Head: ${headPos}`;
+      document.getElementById('maternal-info').innerText = `Maternal HR: ${mHR.toFixed(1)} BPM | Maternal SpO₂: ${mSpO2.toFixed(1)}%`;
+
+      t += 1;
+    }, 1000);
+  </script>
+</body>
+</html>

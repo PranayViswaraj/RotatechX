@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Leaderboard</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 100px 20px 40px;
+      background-color: #0a0a12;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    header {
+      background-color: #0f0f19;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 20px;
+      box-shadow: 0 2px 20px rgba(0, 191, 255, 0.2);
+      z-index: 100;
+      text-align: center;
+    }
+
+    header h1 {
+      color: #00bfff;
+      margin: 0;
+      font-size: 1.8rem;
+    }
+
+    .leaderboard-card {
+      background-color: #1a1a2e;
+      border-left: 5px solid #00bfff;
+      margin: 20px auto;
+      max-width: 700px;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,191,255,0.2);
+      transition: transform 0.3s;
+    }
+
+    .leaderboard-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 20px rgba(0,191,255,0.4);
+    }
+
+    .leaderboard-card h2 {
+      color: #7df9ff;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+
+    .leaderboard-card p {
+      margin: 5px 0;
+      font-size: 0.95rem;
+    }
+
+    .highlight {
+      color: gold;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🏅 Leaderboard</h1>
+</header>
+
+<div class="leaderboard-card">
+  <h2 class="highlight">#1 Haresh Krishna G S</h2>
+  <p>✅ Task Completed: 9</p>
+  <p>🌟 Points: 10 / 10</p>
+</div>
+
+<div class="leaderboard-card">
+  <h2>#2 Roshan M</h2>
+  <p>✅ Task Completed: 8</p>
+  <p>🌟 Points: 9 / 10</p>
+</div>
+
+<div class="leaderboard-card">
+  <h2>#3 Pranay</h2>
+  <p>✅ Task Completed: 8</p>
+  <p>🌟 Points: 9 / 10</p>
+</div>
+
+<div class="leaderboard-card">
+  <h2>#4 Nawin</h2>
+  <p>✅ Task Completed: 7</p>
+  <p>🌟 Points: 8 / 10</p>
+</div>
+
+<div class="leaderboard-card">
+  <h2>#5 Parthiban</h2>
+  <p>✅ Task Completed: 6</p>
+  <p>🌟 Points: 7 / 10</p>
+</div>
+
+<div class="leaderboard-card">
+  <h2>#6 Lohith Ashwa</h2>
+  <p>✅ Task Completed: 5</p>
+  <p>🌟 Points: 6 / 10</p>
+</div>
+
+</body>
+</html>
